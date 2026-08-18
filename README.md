@@ -6,6 +6,24 @@
 
 ---
 
+## 贡献者 / Contributors
+
+<table>
+  <tr>
+    <td align="center">
+      <a href="https://github.com/WBW-QD">
+        <img src="https://github.com/WBW-QD.png" width="60" height="60" style="border-radius:50%" />
+        <br />
+        <b>WBW-QD</b>
+      </a>
+      <br />
+      作者 · Creator
+    </td>
+  </tr>
+</table>
+
+---
+
 ## 一、高 Star 模板
 
 | 项目 | Stars | 值得借鉴的点 |
