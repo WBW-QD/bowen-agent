@@ -302,8 +302,13 @@ async function handleSend(content) {
         reply.content += chunk
       },
       onError: (msg) => {
-        if (!reply.content) reply.content = `（出错了：${msg}）`
-        else reply.content += `\n\n（出错了：${msg}）`
+        // 请求失败 → 视为后端不可用，切到演示模式
+        backendAvailable.value = false
+        if (!reply.content) {
+          reply.content = demoReply(history[history.length - 1]?.content || '')
+        } else {
+          reply.content += `\n\n（出错了：${msg}）`
+        }
       },
     })
   } finally {
