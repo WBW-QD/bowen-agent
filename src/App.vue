@@ -206,17 +206,17 @@ function removeMemory(id) {
 // 预设问答库（覆盖推荐问题池的常见问题，中英双语）
 const DEMO_QA = [
   {
-    keys: ['你是谁', 'who are you'],
+    keys: ['你是谁', 'who are you', '怎么出现', 'come to exist', 'exist'],
     zh: '我是 Bowen Agent，由 Bowen 在 2026 年 8 月 19 日凌晨用 Claude Code 创造的第一个 Agent 项目。',
     en: "I'm Bowen Agent, the first agent project created by Bowen with Claude Code in the early morning of Aug 19, 2026.",
   },
   {
-    keys: ['创造者', '谁创造', 'creator'],
+    keys: ['创造者', '谁创造', 'created you', 'who created', 'creator'],
     zh: '我的创造者是 Bowen，他用 Claude Code 创造了我，这是他的第一个 Agent 项目。',
     en: 'My creator is Bowen. He built me with Claude Code — his first agent project.',
   },
   {
-    keys: ['创建于', '什么时候'],
+    keys: ['创建于', '什么时候', 'when'],
     zh: '我创建于 2026 年 8 月 19 日凌晨，是 Bowen 用 Claude Code 做的第一个 Agent 项目。',
     en: 'I was created in the early morning of Aug 19, 2026 — Bowen’s first agent project with Claude Code.',
   },
@@ -251,7 +251,7 @@ const DEMO_QA = [
     en: 'Python bubble sort:\n\n```python\ndef bubble_sort(arr):\n    n = len(arr)\n    for i in range(n - 1):\n        for j in range(n - 1 - i):\n            if arr[j] > arr[j + 1]:\n                arr[j], arr[j + 1] = arr[j + 1], arr[j]\n    return arr\n```',
   },
   {
-    keys: ['大语言模型', 'llm'],
+    keys: ['大语言模型', 'llm', 'large language'],
     zh: '大语言模型（LLM）是通过海量文本训练的深度学习模型，能理解和生成自然语言。常见的有 GPT、Claude、Qwen 等。',
     en: 'A Large Language Model (LLM) is a deep-learning model trained on massive text that understands and generates natural language.',
   },
@@ -261,7 +261,7 @@ const DEMO_QA = [
     en: 'Why do programmers confuse Halloween and Christmas? Because Oct 31 == Dec 25. 🎃',
   },
   {
-    keys: ['编程', 'learn to code'],
+    keys: ['编程', 'programming', 'learn to code'],
     zh: '快速学会编程：①选一门语言（Python 或 JS）②做一个小项目 ③每天写一点。实践比看教程快得多。',
     en: 'Learn to code fast: ① pick a language (Python or JS) ② build a small project ③ code a little daily. Practice beats tutorials.',
   },
