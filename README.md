@@ -15,7 +15,7 @@
 | [Open WebUI](https://github.com/open-webui/open-webui) | ~50k+ | **同为 Vue 3 技术栈**，Markdown 渲染、多模型切换、RAG 思路 |
 | [Vercel AI Chatbot](https://github.com/vercel/ai-chatbot) | ~15k | 优雅的流式 SSE 实现、前端/后端分工的清晰范式 |
 
-**核心借鉴结论**：高 Star 模板几乎都遵循同一个范式 ——
+**结论**：高 Star 模板几乎都遵循同一个范式 ——
 
 ```
 前端 UI（Vue/React） ⇄  后端 API 代理  ⇄  LLM 接口（Claude / OpenAI / 本地模型）
