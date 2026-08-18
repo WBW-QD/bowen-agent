@@ -26,6 +26,7 @@ const SYSTEM_PROMPT = computed(() => {
 const sending = ref(false)
 const emotionTag = ref(null) // 当前检测到的情绪 { name, emoji, intensity }
 const backendAvailable = ref(true) // 后端是否可达（不可达 → 在线演示模式）
+const showDemoModal = ref(false) // 演示模式提醒弹窗
 const webSearch = ref(false)
 const model = ref('qwen2.5:7b')
 const models = ref([])
@@ -40,6 +41,13 @@ async function checkBackend() {
     backendAvailable.value = res.ok
   } catch {
     backendAvailable.value = false
+  }
+  if (!backendAvailable.value) {
+    // 演示模式：弹窗提醒一次
+    if (!sessionStorage.getItem('demo-modal-seen')) {
+      showDemoModal.value = true
+      sessionStorage.setItem('demo-modal-seen', '1')
+    }
   }
 }
 
@@ -481,6 +489,19 @@ async function handleSend(content) {
       />
     </main>
   </div>
+
+  <!-- 演示模式提醒弹窗 -->
+  <Teleport to="body">
+    <div v-if="showDemoModal" class="demo-modal" @click.self="showDemoModal = false">
+      <div class="demo-modal-card">
+        <div class="demo-modal-icon">🧪</div>
+        <h3 class="demo-modal-title">{{ t('demoTitle') }}</h3>
+        <p class="demo-modal-desc">{{ t('demoDesc1') }}</p>
+        <p class="demo-modal-desc">{{ t('demoDesc2') }}</p>
+        <button class="demo-modal-btn" @click="showDemoModal = false">{{ t('demoGotIt') }}</button>
+      </div>
+    </div>
+  </Teleport>
 </template>
 
 <style scoped>
@@ -696,6 +717,62 @@ async function handleSend(content) {
   color: #ffd166;
   border: 1px solid rgba(255, 209, 102, 0.5);
   background: rgba(255, 209, 102, 0.1);
+}
+
+/* 演示模式提醒弹窗 */
+.demo-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 1100;
+  background: rgba(0, 0, 0, 0.7);
+  display: grid;
+  place-items: center;
+  padding: 24px;
+}
+
+.demo-modal-card {
+  max-width: 380px;
+  width: 100%;
+  padding: 28px 24px;
+  border-radius: 16px;
+  background: var(--bg-elevated);
+  border: 1px solid var(--border);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6);
+  text-align: center;
+}
+
+.demo-modal-icon {
+  font-size: 40px;
+  margin-bottom: 10px;
+}
+
+.demo-modal-title {
+  font-size: 18px;
+  font-weight: 600;
+  margin-bottom: 12px;
+  color: #ffd166;
+}
+
+.demo-modal-desc {
+  font-size: 13.5px;
+  color: var(--text-muted);
+  line-height: 1.7;
+  margin-bottom: 8px;
+}
+
+.demo-modal-btn {
+  margin-top: 14px;
+  padding: 9px 28px;
+  border-radius: 999px;
+  background: var(--accent);
+  color: #fff;
+  font-size: 14px;
+  font-weight: 500;
+  transition: background 0.15s;
+}
+
+.demo-modal-btn:hover {
+  background: var(--accent-hover);
 }
 
 /* 情绪标签 */

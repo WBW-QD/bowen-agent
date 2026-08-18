@@ -37,6 +37,10 @@ const messages = {
     fontM: '中',
     fontL: '大',
     demoMode: '演示模式',
+    demoTitle: '在线演示模式',
+    demoDesc1: '当前是「在线演示模式」——GitHub Pages 只部署了前端界面，没有后端和 Ollama 模型。',
+    demoDesc2: '演示模式下提供预设问答；部署完整后端后，即可体验真实的 AI 对话、联网搜索等功能。',
+    demoGotIt: '我知道了',
   },
   en: {
     newChat: 'New Chat',
@@ -66,6 +70,10 @@ const messages = {
     fontM: 'M',
     fontL: 'L',
     demoMode: 'Demo Mode',
+    demoTitle: 'Online Demo Mode',
+    demoDesc1: 'You’re in "Demo Mode" — GitHub Pages hosts only the frontend, with no backend or Ollama model.',
+    demoDesc2: 'Demo mode provides preset answers. Deploy the full backend to unlock real AI chat, web search, and more.',
+    demoGotIt: 'Got it',
   },
 }
 
