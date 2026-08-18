@@ -1,12 +1,12 @@
-# Bowen Agent · 全知全能 AI Chat
+# Bowen Agent ·  AI Chat
 
-一个"有问必答"的全能 AI 对话前端。借鉴 GitHub 高 Star 的 AI 聊天应用（NextChat、LobeChat、Open WebUI 等）的设计与架构，基于 **Vue 3 + Vite** 从零构建。
+一个"有问必答"的全能 AI 对话前端，多功能AI 聊天应用（NextChat、LobeChat、Open WebUI 等）的设计与架构，基于 **Vue 3 + Vite** 从零构建。
 
 > 愿景：打造一个界面友好、支持流式输出、多轮对话、可扩展知识检索的全能 AI 助手。
 
 ---
 
-## 一、借鉴的高 Star 模板
+## 一、高 Star 模板
 
 | 项目 | Stars | 值得借鉴的点 |
 |------|-------|-------------|
