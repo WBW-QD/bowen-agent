@@ -203,23 +203,121 @@ function removeMemory(id) {
 }
 
 // ===== 在线演示模式：后端不可用时本地生成回复 =====
+// 预设问答库（覆盖推荐问题池的常见问题，中英双语）
+const DEMO_QA = [
+  {
+    keys: ['你是谁', 'who are you'],
+    zh: '我是 Bowen Agent，由 Bowen 在 2026 年 8 月 19 日凌晨用 Claude Code 创造的第一个 Agent 项目。',
+    en: "I'm Bowen Agent, the first agent project created by Bowen with Claude Code in the early morning of Aug 19, 2026.",
+  },
+  {
+    keys: ['创造者', '谁创造', 'creator'],
+    zh: '我的创造者是 Bowen，他用 Claude Code 创造了我，这是他的第一个 Agent 项目。',
+    en: 'My creator is Bowen. He built me with Claude Code — his first agent project.',
+  },
+  {
+    keys: ['创建于', '什么时候'],
+    zh: '我创建于 2026 年 8 月 19 日凌晨，是 Bowen 用 Claude Code 做的第一个 Agent 项目。',
+    en: 'I was created in the early morning of Aug 19, 2026 — Bowen’s first agent project with Claude Code.',
+  },
+  {
+    keys: ['会做什么', '能力', 'what can you', 'abilities'],
+    zh: '我能回答问题、帮你写代码、解释概念、做总结、翻译文本……全知全能，有问必答。',
+    en: 'I can answer questions, write code, explain concepts, summarize, translate… basically anything. Just ask!',
+  },
+  {
+    keys: ['联网', 'online', '搜索'],
+    zh: '完整部署下我可以联网搜索（百度/搜狗/必应）。现在是演示模式，联网需要后端支持。',
+    en: 'When fully deployed I can search the web (Baidu/Sogou/Bing). In this demo mode, that needs the backend.',
+  },
+  {
+    keys: ['记忆', 'memory', '记住'],
+    zh: '我有长期记忆功能：你对我说「记住：xxx」，我就会一直记住。',
+    en: 'I have long-term memory: tell me "remember: xxx" and I’ll keep it in mind.',
+  },
+  {
+    keys: ['计数器', 'counter'],
+    zh: 'Vue 3 计数器：\n\n```vue\n<script setup>\nimport { ref } from "vue"\nconst count = ref(0)\n<\/script>\n\n<template>\n  <button @click="count++">点击了 {{ count }} 次</button>\n<\/template>\n```',
+    en: 'Vue 3 counter:\n\n```vue\n<script setup>\nimport { ref } from "vue"\nconst count = ref(0)\n<\/script>\n\n<template>\n  <button @click="count++">Clicked {{ count }} times</button>\n<\/template>\n```',
+  },
+  {
+    keys: ['vue'],
+    zh: 'Vue 3 是最流行的渐进式前端框架之一，组合式 API 让逻辑复用更清晰，配合 Vite 开发体验极佳。',
+    en: 'Vue 3 is one of the most popular progressive frontend frameworks, with a clean Composition API and great DX with Vite.',
+  },
+  {
+    keys: ['冒泡', 'bubble', 'python'],
+    zh: 'Python 冒泡排序：\n\n```python\ndef bubble_sort(arr):\n    n = len(arr)\n    for i in range(n - 1):\n        for j in range(n - 1 - i):\n            if arr[j] > arr[j + 1]:\n                arr[j], arr[j + 1] = arr[j + 1], arr[j]\n    return arr\n```',
+    en: 'Python bubble sort:\n\n```python\ndef bubble_sort(arr):\n    n = len(arr)\n    for i in range(n - 1):\n        for j in range(n - 1 - i):\n            if arr[j] > arr[j + 1]:\n                arr[j], arr[j + 1] = arr[j + 1], arr[j]\n    return arr\n```',
+  },
+  {
+    keys: ['大语言模型', 'llm'],
+    zh: '大语言模型（LLM）是通过海量文本训练的深度学习模型，能理解和生成自然语言。常见的有 GPT、Claude、Qwen 等。',
+    en: 'A Large Language Model (LLM) is a deep-learning model trained on massive text that understands and generates natural language.',
+  },
+  {
+    keys: ['冷笑话', '笑话', 'joke'],
+    zh: '为什么程序员分不清万圣节和圣诞节？因为 Oct 31 == Dec 25。🎃',
+    en: 'Why do programmers confuse Halloween and Christmas? Because Oct 31 == Dec 25. 🎃',
+  },
+  {
+    keys: ['编程', 'learn to code'],
+    zh: '快速学会编程：①选一门语言（Python 或 JS）②做一个小项目 ③每天写一点。实践比看教程快得多。',
+    en: 'Learn to code fast: ① pick a language (Python or JS) ② build a small project ③ code a little daily. Practice beats tutorials.',
+  },
+  {
+    keys: ['rag'],
+    zh: 'RAG（检索增强生成）：先从知识库检索相关资料，再让模型基于资料回答，能减少幻觉、回答私有知识。',
+    en: 'RAG (Retrieval-Augmented Generation): retrieve relevant documents first, then answer based on them — less hallucination, handles private knowledge.',
+  },
+  {
+    keys: ['前端项目', 'frontend'],
+    zh: '规划前端项目：①明确需求与页面 ②选技术栈 ③设计组件/状态 ④分阶段开发（静态→数据→联调）。',
+    en: 'Plan a frontend project: ① clarify requirements ② pick a stack ③ design components/state ④ build in phases.',
+  },
+  {
+    keys: ['量子计算', 'quantum'],
+    zh: '量子计算利用量子比特的叠加和纠缠做并行计算，在因数分解、分子模拟等问题上远超经典计算机。',
+    en: 'Quantum computing uses superposition and entanglement to solve problems like factoring and molecular simulation far faster.',
+  },
+  {
+    keys: ['2026', '新闻', '事件', 'news'],
+    zh: '这是演示模式，无法获取 2026 年的实时新闻。部署完整后端并开启联网后，我就能搜索最新资讯了。',
+    en: 'This is demo mode, so I can’t fetch 2026 news. Once the full backend + web search is deployed, I can look it up.',
+  },
+  {
+    keys: ['周末', 'weekend'],
+    zh: '周末推荐：去户外走走、读本书、做顿好吃的、学点新技能…… 或者找我聊聊天 😄',
+    en: 'Weekend ideas: go outside, read a book, cook something nice, learn a new skill… or chat with me 😄',
+  },
+  {
+    keys: ['书', 'book'],
+    zh: '推荐《AIGC：智能创作时代》或《这就是ChatGPT》，都是了解 AI 的好入门书。',
+    en: 'I’d recommend "AI 2041" or "A Brief History of Intelligence" as great AI reads.',
+  },
+]
+
+// 演示回复：时间/日期按浏览器当前时间，其余命中预设问答库
 function demoReply(content) {
   const now = new Date()
   const wd = '日一二三四五六'[now.getDay()]
-  if (/几点|时间|time|现在.{0,2}钟/.test(content)) {
+  if (/几点|时间|time/.test(content)) {
     return `现在是 ${now.getHours()}:${String(now.getMinutes()).padStart(2, '0')}。`
   }
   if (/几号|日期|date|星期/.test(content)) {
     return `今天是 ${now.getFullYear()}年${now.getMonth() + 1}月${now.getDate()}日，星期${wd}。`
   }
-  if (/你是谁|who are you|介绍/.test(content)) {
-    return '我是 Bowen Agent，由 Bowen 在 2026 年 8 月 19 日凌晨用 Claude Code 创造的第一个 Agent 项目。'
+  const q = content.toLowerCase()
+  for (const qa of DEMO_QA) {
+    if (qa.keys.some((k) => q.includes(k))) {
+      return lang.value === 'en' ? qa.en : qa.zh
+    }
   }
   const head =
     lang.value === 'en'
       ? 'This is an online DEMO MODE'
       : '现在是【在线演示模式】'
-  return `你问的是「${content.slice(0, 40)}」\n\n${head}：GitHub Pages 上只部署了前端界面，没有后端和 Ollama 模型，所以我先给你一段演示回复。等部署完整后端后，我就能真正回答这个问题了。`
+  return `你问的是「${content.slice(0, 40)}」\n\n${head}：GitHub Pages 上只部署了前端界面，没有后端和 Ollama 模型。部署完整后端后，我就能真正回答这个问题了。`
 }
 
 // 演示回复：逐字"打字"效果
