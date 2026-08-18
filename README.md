@@ -1,6 +1,6 @@
 # Bowen Agent ·  AI Chat
 
-一个"有问必答"的全能 AI 对话前端，多功能AI 聊天应用（NextChat、LobeChat、Open WebUI 等）的设计与架构，基于 **Vue 3 + Vite** 从零构建。
+一个"有问必答"的全能 AI 对话前端模板，部署本地大模型即可变为多功能AI 聊天应用，包含（NextChat、LobeChat、Open WebUI 等）的设计与架构，基于 **Vue 3 + Vite** 从零构建。
 
 > 愿景：打造一个界面友好、支持流式输出、多轮对话、可扩展知识检索的全能 AI 助手。
 
