@@ -25,9 +25,23 @@ const SYSTEM_PROMPT = computed(() => {
 
 const sending = ref(false)
 const emotionTag = ref(null) // 当前检测到的情绪 { name, emoji, intensity }
+const backendAvailable = ref(true) // 后端是否可达（不可达 → 在线演示模式）
 const webSearch = ref(false)
 const model = ref('qwen2.5:7b')
 const models = ref([])
+
+// 检测后端是否可达（不可达 → 进入在线演示模式）
+async function checkBackend() {
+  try {
+    const ctrl = new AbortController()
+    const timer = setTimeout(() => ctrl.abort(), 3000)
+    const res = await fetch('/api/health', { signal: ctrl.signal })
+    clearTimeout(timer)
+    backendAvailable.value = res.ok
+  } catch {
+    backendAvailable.value = false
+  }
+}
 
 // 点击记忆面板外部时关闭
 function onMemoryClickOutside(e) {
@@ -39,6 +53,7 @@ function onMemoryClickOutside(e) {
 // 加载已安装的模型列表，填充下拉框
 onMounted(async () => {
   document.addEventListener('click', onMemoryClickOutside)
+  checkBackend()
   try {
     const res = await fetch('/api/models')
     const json = await res.json()
@@ -187,6 +202,40 @@ function removeMemory(id) {
   memories.value = memories.value.filter((m) => m.id !== id)
 }
 
+// ===== 在线演示模式：后端不可用时本地生成回复 =====
+function demoReply(content) {
+  const now = new Date()
+  const wd = '日一二三四五六'[now.getDay()]
+  if (/几点|时间|time|现在.{0,2}钟/.test(content)) {
+    return `现在是 ${now.getHours()}:${String(now.getMinutes()).padStart(2, '0')}。`
+  }
+  if (/几号|日期|date|星期/.test(content)) {
+    return `今天是 ${now.getFullYear()}年${now.getMonth() + 1}月${now.getDate()}日，星期${wd}。`
+  }
+  if (/你是谁|who are you|介绍/.test(content)) {
+    return '我是 Bowen Agent，由 Bowen 在 2026 年 8 月 19 日凌晨用 Claude Code 创造的第一个 Agent 项目。'
+  }
+  const head =
+    lang.value === 'en'
+      ? 'This is an online DEMO MODE'
+      : '现在是【在线演示模式】'
+  return `你问的是「${content.slice(0, 40)}」\n\n${head}：GitHub Pages 上只部署了前端界面，没有后端和 Ollama 模型，所以我先给你一段演示回复。等部署完整后端后，我就能真正回答这个问题了。`
+}
+
+// 演示回复：逐字"打字"效果
+function demoStream(reply, fullText) {
+  emotionTag.value = null
+  let i = 0
+  const timer = setInterval(() => {
+    i += 2
+    reply.content = fullText.slice(0, i)
+    if (i >= fullText.length) {
+      clearInterval(timer)
+      reply.content = fullText
+    }
+  }, 20)
+}
+
 async function handleSend(content) {
   if (sending.value) return
 
@@ -219,6 +268,13 @@ async function handleSend(content) {
   // 注意：必须用 reactive()，否则直接改 reply.content 不会触发视图更新
   const reply = reactive({ role: 'assistant', content: '' })
   session.messages.push(reply)
+
+  // 在线演示模式：后端不可用时本地生成回复
+  if (!backendAvailable.value) {
+    demoStream(reply, demoReply(content))
+    sending.value = false
+    return
+  }
 
   // 上下文：过滤掉空的占位消息，发送完整历史（含本次提问）
   const history = session.messages
@@ -306,6 +362,7 @@ async function handleSend(content) {
             {{ emotionTag.emoji }} {{ lang === 'en' ? EMOTION_LABELS.en[emotionTag.name] || emotionTag.name : emotionTag.name }}
           </span>
           <span v-if="webSearch" class="web-badge">🌐 {{ t('online') }}</span>
+          <span v-if="!backendAvailable" class="demo-badge">🧪 {{ t('demoMode') }}</span>
           <span class="model-tag">{{ sending ? t('generating') : `${model} · ${t('localModel')}` }}</span>
         </div>
       </header>
@@ -525,6 +582,17 @@ async function handleSend(content) {
 .memory-empty {
   font-size: 12px;
   color: var(--text-faint);
+}
+
+/* 在线演示模式徽标 */
+.demo-badge {
+  flex-shrink: 0;
+  padding: 3px 10px;
+  border-radius: 999px;
+  font-size: 11.5px;
+  color: #ffd166;
+  border: 1px solid rgba(255, 209, 102, 0.5);
+  background: rgba(255, 209, 102, 0.1);
 }
 
 /* 情绪标签 */

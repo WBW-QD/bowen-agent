@@ -36,6 +36,7 @@ const messages = {
     fontS: '小',
     fontM: '中',
     fontL: '大',
+    demoMode: '演示模式',
   },
   en: {
     newChat: 'New Chat',
@@ -64,6 +65,7 @@ const messages = {
     fontS: 'S',
     fontM: 'M',
     fontL: 'L',
+    demoMode: 'Demo Mode',
   },
 }
 
