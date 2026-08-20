@@ -1,5 +1,31 @@
 # Bug 记录
 
+## BUG-011 · 前后端合并启动：npm run dev 一条命令同时跑起前端 + 后端
+
+- **日期**：2026-08-20
+- **状态**：✅ 已完成
+- **类型**：工作记录（非 bug）
+- **文件**：`package.json`、`README.md`
+
+### 背景
+此前要两条命令分开启动：`npm run dev`（前端 Vite）+ `npm run server`（后端 Express）。两条命令容易漏启其中一个，导致前端请求 404 或连不上模型。
+
+### 方案
+引入 `concurrently`，`npm run dev` 一条命令并行拉起两个进程：
+- `[server]` → `node server/index.js`（后端 :3000）
+- `[web]` → `vite`（前端 :5173，被占用自动换 5174）
+- 加了 `-k`：Ctrl+C 退出时同时停掉两个；日志带 `[server]`/`[web]` 颜色前缀区分。
+- 保留 `npm run server`、`npm run web` 单独启动能力；生产模式仍由 `node server/index.js` 托管 `dist/`。
+
+### 验证
+一条命令重启后：`/api/health`、`/api/models`、前端页面、代理链路 `:5174/api/health` 全部通过 ✅
+
+### 经验教训
+- 多进程开发服务的标准合并方式就是 `concurrently`，一个命令管全部，别让用户记两条。
+- 5173 被另一项目（`vue3-diabetes-project` 糖护智伴）占用时，Vite 会自动换 5174，README 已注明端口可能变化。
+
+---
+
 ## BUG-010 · 点击其他区域，设置/记忆面板不会关闭
 
 - **日期**：2026-08-19
