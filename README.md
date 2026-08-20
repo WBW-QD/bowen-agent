@@ -141,7 +141,7 @@ Vite + Vue 3 脚手架就绪，`npm run dev` 可启动。
 - 产出：`src/api/chat.js`（fetch + ReadableStream 解析 SSE）
 - 验证：端到端（Vite 代理 → Express → Ollama）流式返回成功，多轮上下文实测有效
 
-运行方式：`npm run dev`（前端）+ `npm run server`（后端），浏览器访问 `http://localhost:5173`。
+运行方式：`npm run dev` 一条命令同时启动前端（Vite）与后端（Express），浏览器访问 `http://localhost:5173`（被占用时自动换端口）。
 
 ### Phase 4 · 会话管理
 Pinia 管理会话/消息状态；localStorage 持久化；支持重命名、删除、切换会话。
@@ -188,9 +188,9 @@ vue-AI-project
 
 ```sh
 npm install
-npm run dev        # 前端开发服务器 (Vite, 默认 :5173)
-npm run server     # 后端代理 (Node, :3000)  ← Phase 2 之后
+npm run dev        # 一条命令同时启动 前端 Vite（:5173）+ 后端 Express（:3000）
 ```
+> 已用 `concurrently` 合并：`npm run dev` = `npm run web` + `npm run server`。旧的后端仍可单独用 `npm run server` 启动。
 
 **首选方案：本地 Ollama（免费、离线、无需 API Key）**
 
